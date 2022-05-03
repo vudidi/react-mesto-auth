@@ -147,7 +147,6 @@ function App() {
           setInfoTooltipOpen(false);
           history.push("/sign-in");
         }, 1500);
-        console.log("isLoginSuccess ", isLoginSuccess);
       })
       .catch((err) => {
         setRegistrationSuccess(false);
