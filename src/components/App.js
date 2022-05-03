@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Route,
-  Redirect,
-  Switch,
-  useHistory,
-  useLocation,
-} from "react-router-dom";
+import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -21,6 +15,8 @@ import Register from "./Register";
 import api from "../utils/Api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import * as Auth from "../utils/Auth";
+import iconErrorPath from "../styles/images/reg-icon-error.png";
+import iconSuccessPath from "../styles/images/reg-icon-success.png";
 
 function App() {
   const [isEditProfilePopupOpen, setOpenEditProfile] = React.useState(false);
@@ -31,36 +27,30 @@ function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
-  const [currentLocation, setCurrentLocation] = React.useState("/");
   const [userEmail, setUserEmail] = React.useState("");
   const [isBurgerMenuOpen, setBurgerMenuOpen] = React.useState(false);
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
   const [isRegistrationSuccess, setRegistrationSuccess] = React.useState(null);
+  const [isLoginSuccess, setLoginSuccess] = React.useState(true);
   const history = useHistory();
-  const location = useLocation();
-
-  React.useEffect(() => {
-    setCurrentLocation(location.pathname);
-  }, [location]);
 
   React.useEffect(() => {
     tokenCheck();
   }, []);
 
   React.useEffect(() => {
-    loggedIn && history.push("/");
+    if (loggedIn) {
+      history.push("/");
+      Promise.all([api.getCards(), api.getProfile()])
+        .then(([cardsData, userData]) => {
+          setCards(cardsData);
+          setCurrentUser(userData);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, [loggedIn]);
-
-  React.useEffect(() => {
-    Promise.all([api.getCards(), api.getProfile()])
-      .then(([cardsData, userData]) => {
-        setCards(cardsData);
-        setCurrentUser(userData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   function handleAddPlaceSubmit(data) {
     api
@@ -150,13 +140,14 @@ function App() {
 
   function handleRegisterUser(data) {
     Auth.register(data.email, data.password)
-      .then((res) => {
+      .then(() => {
         setRegistrationSuccess(true);
         setInfoTooltipOpen(true);
         setTimeout(() => {
           setInfoTooltipOpen(false);
           history.push("/sign-in");
         }, 1500);
+        console.log("isLoginSuccess ", isLoginSuccess);
       })
       .catch((err) => {
         setRegistrationSuccess(false);
@@ -174,6 +165,8 @@ function App() {
         history.push("/");
       })
       .catch((err) => {
+        setLoginSuccess(false);
+        setInfoTooltipOpen(true);
         console.log(err);
       });
   }
@@ -210,7 +203,6 @@ function App() {
         <Header
           loggedIn={loggedIn}
           onSignOut={handleSignOut}
-          location={currentLocation}
           email={userEmail}
           onOpenMenu={toggleBurgerMenu}
           isMenuOpen={isBurgerMenuOpen}
@@ -254,6 +246,17 @@ function App() {
 
           <Route path="/sign-in">
             <Login handleLogin={handleLoginUser} />
+            <InfoTooltip
+              isOpen={isInfoTooltipOpen}
+              onClose={closeAllPopups}
+              isSuccess={isLoginSuccess}
+              infoIcon={isLoginSuccess ? iconSuccessPath : iconErrorPath}
+              infoMessage={
+                isLoginSuccess
+                  ? "Вы успешно зарегистрировались!"
+                  : "Что-то пошло не так! Попробуйте ещё раз."
+              }
+            />
           </Route>
 
           <Route path="/sign-up">
@@ -262,6 +265,12 @@ function App() {
               isOpen={isInfoTooltipOpen}
               onClose={closeAllPopups}
               isSuccess={isRegistrationSuccess}
+              infoIcon={isRegistrationSuccess ? iconSuccessPath : iconErrorPath}
+              infoMessage={
+                isRegistrationSuccess
+                  ? "Вы успешно зарегистрировались!"
+                  : "Что-то пошло не так! Попробуйте ещё раз."
+              }
             />
           </Route>
 
