@@ -20,6 +20,7 @@
 * JS
 * React
 * Функциональные и классовые компоненты
+* React Hooks
 * Webpack
 * Git
 
