@@ -26,3 +26,11 @@ ____
 * Webpack
 * Git
 
+## Запуск проекта
+
+`https://github.com/vudidi/react-mesto-auth.git` - клонировать репозиторий
+
+`npm install` - установить зависимости  
+`npm run start` — запустить сервер  
+`npm run build` — собрать проект
+
