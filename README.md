@@ -28,7 +28,7 @@ ____
 
 ## Запуск проекта
 
-`https://github.com/vudidi/react-mesto-auth.git` - клонировать репозиторий
+`git clone https://github.com/vudidi/react-mesto-auth.git` - клонировать репозиторий
 
 `npm install` - установить зависимости  
 `npm run start` - запустить сервер  
