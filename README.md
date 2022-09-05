@@ -34,3 +34,7 @@ ____
 `npm run start` - запустить сервер  
 `npm run build` - собрать проект
 
+## Деплой фронтенда
+
+https://vudidi-mesto.nomoreparties.sbs
+
